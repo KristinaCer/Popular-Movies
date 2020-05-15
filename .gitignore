@@ -83,6 +83,6 @@ lint/tmp/
 # lint/reports/
 
 #Others:
+
 .DS_Store
-.gitattributes
-README.md
+
