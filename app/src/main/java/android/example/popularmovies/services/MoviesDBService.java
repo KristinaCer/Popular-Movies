@@ -11,8 +11,8 @@ public class MoviesDBService {
     private static MoviesDBService moviesDBService;
     private static final String TAG = "MoviesDBService";
 
-    /*The object is initiated only once - if it was not yet created.
-    If the object was already created, the instance of the created object is returned.
+    /*The object is initiated only once - if it has not been created yet.
+    If the object has been already created, the instance of the created object is returned.
     Since we create the movies DB API by using Retrofit instance withing the private MovieDBService constructor,
     it is also created only once.*/
 
