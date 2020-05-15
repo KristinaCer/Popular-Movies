@@ -1,4 +1,6 @@
-package android.example.popularmovies.services;
+package android.example.popularmovies.requests;
+
+import android.example.popularmovies.requests.responses.MovieResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -10,5 +12,4 @@ public interface MoviesDBApi {
     Call<MovieResponse> getMoviesByCategory(@Path("category") String movieCategory,
                                             @Query("api_key") String apiKey,
                                             @Query("page") int number);
-
 }

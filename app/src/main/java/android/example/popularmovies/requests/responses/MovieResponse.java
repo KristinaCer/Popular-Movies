@@ -1,4 +1,4 @@
-package android.example.popularmovies.services;
+package android.example.popularmovies.requests.responses;
 
 import android.example.popularmovies.models.Movie;
 
