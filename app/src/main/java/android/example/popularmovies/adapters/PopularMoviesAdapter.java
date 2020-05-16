@@ -3,6 +3,7 @@ package android.example.popularmovies.adapters;
 import android.content.Context;
 import android.example.popularmovies.R;
 import android.example.popularmovies.models.Movie;
+import android.example.popularmovies.utils.Constants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,7 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
                 .placeholder(R.drawable.ic_launcher_background);
         Glide.with(holder.itemView.getContext())
                 .setDefaultRequestOptions(requestOptions)
-                .load(new File(mMovies.get(position).getPosterPath()))
+                .load(Constants.BASE_URL_F0R_IMG + mMovies.get(position).getPosterPath())
                 .into(holder.poster);
     }
 
