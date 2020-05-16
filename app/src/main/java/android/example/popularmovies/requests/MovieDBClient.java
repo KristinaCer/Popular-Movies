@@ -9,6 +9,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,7 @@ public class MovieDBClient {
     private MoviesDBApi moviesDBApi;
     private MutableLiveData<List<Movie>> mMovies;
     private static final String TAG = "MoviesDBService";
+    private RetrieveMoviesRunnable mRetrieveMoviesRunnable;
 
     private MovieDBClient() {
         mMovies = new MutableLiveData<List<Movie>>();
@@ -64,11 +66,19 @@ public class MovieDBClient {
 
     //Making a request to a movie DB api server:
 
-    public void retrieveMoviesAPI() {
-        final Future handler = AppExecutors.getInstance().getNetworkIO().submit()
+    public void retrieveMoviesAPI(String query, int pageNumber) {
+        //In case the runnable is not null, instantiate a new object every time
+        // a new query is created:
+        if (mRetrieveMoviesRunnable != null) {
+            mRetrieveMoviesRunnable = null;
+        }
+        mRetrieveMoviesRunnable = new RetrieveMoviesRunnable(query, pageNumber);
+        final Future handler = AppExecutors.getInstance().getNetworkIO().submit(mRetrieveMoviesRunnable);
+
         AppExecutors.getInstance().getNetworkIO().schedule(new Runnable() {
             @Override
             public void run() {
+                //let the user know if it is time out
                 handler.cancel(true);
             }
         }, Constants.NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
@@ -89,28 +99,41 @@ public class MovieDBClient {
         @Override
         public void run() {
             try {
-                if(cancelRequest){
+                if (cancelRequest) {
                     return;
                 }
-                Response response = this.getMovies(this.query, this. pageNo).execute();
-                //if everything is OK:
-                if(response.code() == 200){
-
+                Response response = this.getMovies(this.query, this.pageNo).execute();
+                //If everything is OK:
+                if (response.code() == 200) {
+                    List<Movie> movies = new ArrayList<>(((MovieResponse) response.body()).getMovies());
+                    //Posting values from the background thread:
+                    if (pageNo == 1) {
+                        mMovies.postValue(movies);
+                    } else {
+                        //If it is 1+n page, we append the data to the existing list, rather than creating the new one:
+                        List<Movie> currentList = mMovies.getValue();
+                        currentList.addAll(movies);
+                        mMovies.postValue(currentList);
+                    }
+                } else {
+                    String error = response.errorBody().string();
+                    Log.e(TAG, "run" + error);
+                    mMovies.postValue(null);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        private Call<MovieResponse> getMovies(String query, int pageNo){
+        private Call<MovieResponse> getMovies(String query, int pageNo) {
             return moviesDBApi.getMoviesByCategory(
                     query,
                     Constants.API_KEY,
                     pageNo
-                    );
+            );
         }
 
-        private void cancelRequest(){
+        private void cancelRequest() {
             Log.d(TAG, "Cancelling the search request.");
             cancelRequest = true;
         }

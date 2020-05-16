@@ -9,15 +9,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+
+import java.io.File;
+import java.util.List;
+
+/*
+https://www.reddit.com/r/androiddev/comments/8aabvb/picasso_vs_glide/ for why I chose to develop using Glide instead of Picasso.
+ */
 
 public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdapter.PopularMoviesViewHolder> {
 
-    private final Movie[] movies;
-
-    public PopularMoviesAdapter(Movie[] movies) {
-        this.movies = movies;
-    }
+    private List<Movie> mMovies;
 
     @NonNull
     @Override
@@ -26,9 +33,11 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
         int layoutFromListItem = R.layout.movie_posters_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
-        //we also need to provide the ViewGroup since our item layout is associated with a particular view groups,
-        // as described in the stack overflow post below:
-        // https://stackoverflow.com/questions/41781636/why-we-need-viewgroup-parameter-on-recyclerview:
+
+        /*We need to provide the ViewGroup as item layout is associated with a particular view group,
+         as described in the stack overflow post below:
+         https://stackoverflow.com/questions/41781636/why-we-need-viewgroup-parameter-on-recyclerview: */
+
         View view = inflater.inflate(layoutFromListItem, parent, shouldAttachToParentImmediately);
         PopularMoviesViewHolder viewHolder = new PopularMoviesViewHolder(view);
         return viewHolder;
@@ -36,26 +45,44 @@ public class PopularMoviesAdapter extends RecyclerView.Adapter<PopularMoviesAdap
 
     @Override
     public void onBindViewHolder(@NonNull PopularMoviesViewHolder holder, int position) {
-        holder.bind(position);
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.drawable.ic_launcher_background);
+        Glide.with(holder.itemView.getContext())
+                .setDefaultRequestOptions(requestOptions)
+                .load(new File(mMovies.get(position).getPosterPath()))
+                .into(holder.poster);
     }
 
     @Override
     public int getItemCount() {
-        return movies.length;
+        if (mMovies != null) {
+            return mMovies.size();
+        }
+        return 0;
     }
 
-    //The class cashes references to the views that will be modified in the adapter as findviewbyid() calls can get expensive:
+    public void setMovies(List<Movie> movies) {
+        mMovies = movies;
+        notifyDataSetChanged();
+    }
+
+    //The logic of the class is to cash references to the views that will be then modified in the adapter
+    // as calling findViewById() for every new item in the view would get too expensive:
+
     class PopularMoviesViewHolder extends RecyclerView.ViewHolder {
-        private ImageView moviesImageView;
+        ImageView poster;
         private Context context;
 
         public PopularMoviesViewHolder(@NonNull View itemView) {
             super(itemView);
-            moviesImageView = (ImageView) itemView.findViewById(R.id.iv_item_poster);
-        }
-
-        public void bind(int listIndex) {
-             moviesImageView.setImageResource(movies[listIndex].getResID());
+            poster = (AppCompatImageView) itemView.findViewById(R.id.iv_item_poster);
+            itemView.setOnContextClickListener(new View.OnContextClickListener() {
+                @Override
+                public boolean onContextClick(View v) {
+                    getAdapterPosition();
+                    return true;
+                }
+            });
         }
     }
 }

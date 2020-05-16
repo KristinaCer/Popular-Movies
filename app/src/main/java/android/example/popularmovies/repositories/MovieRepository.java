@@ -2,9 +2,7 @@ package android.example.popularmovies.repositories;
 
 import android.example.popularmovies.models.Movie;
 import android.example.popularmovies.requests.MovieDBClient;
-
 import androidx.lifecycle.LiveData;
-
 import java.util.List;
 
 // Movie repository is also implemented as Singleton:
@@ -33,6 +31,6 @@ public class MovieRepository {
         if (pageNumber == 0) {
             pageNumber = 1;
         }
-        //retrieving the movie data using MovieDBClient
+        dbClient.retrieveMoviesAPI(query, pageNumber);
     }
 }
