@@ -7,7 +7,7 @@ import android.example.popularmovies.adapters.OnMoviePosterListener;
 import android.example.popularmovies.adapters.PopularMoviesAdapter;
 import android.example.popularmovies.models.Movie;
 import android.example.popularmovies.utils.Constants;
-import android.example.popularmovies.viewmodels.SharedMovieViewModel;
+import android.example.popularmovies.viewmodels.MoviePostersListViewModel;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -26,7 +26,7 @@ public class MoviePostersListActivity extends AppCompatActivity implements OnMov
     private PopularMoviesAdapter mAdapter;
     private RecyclerView mMoviesList;
     private static final String TAG = "MoviePostersListActivity";
-    private SharedMovieViewModel mPostersListViewModel;
+    private MoviePostersListViewModel mPostersListViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class MoviePostersListActivity extends AppCompatActivity implements OnMov
         setContentView(R.layout.activity_movie_posters_list);
         mMoviesList = (RecyclerView) findViewById(R.id.rv_movie_posters);
         initRecyclerView();
-        mPostersListViewModel = ViewModelProviders.of(this).get(SharedMovieViewModel.class);
+        mPostersListViewModel = ViewModelProviders.of(this).get(MoviePostersListViewModel.class);
         addObservers();
         testRetroFitRequest();
     }
