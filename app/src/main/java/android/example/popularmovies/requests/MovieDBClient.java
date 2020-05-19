@@ -64,6 +64,7 @@ public class MovieDBClient {
         return moviesDBApi;
     }
 
+
     //Making a request to a movie DB api server:
 
     public void retrieveMoviesAPI(String query, int pageNumber) {

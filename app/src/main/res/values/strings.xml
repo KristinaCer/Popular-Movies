@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">PopularMovies</string>
-    <string name="select">Select</string>
+    <string name="select">TopRated</string>
 </resources>

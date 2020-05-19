@@ -6,11 +6,11 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import java.util.List;
 
-public class MoviePostersListViewModel extends ViewModel {
+public class SharedMovieViewModel extends ViewModel {
 
     MovieRepository movieRepository;
 
-    public MoviePostersListViewModel() {
+    public SharedMovieViewModel() {
         movieRepository = MovieRepository.getInstance();
     }
 
