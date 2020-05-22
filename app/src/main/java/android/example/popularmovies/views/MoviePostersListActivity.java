@@ -9,6 +9,7 @@ import android.example.popularmovies.models.Movie;
 import android.example.popularmovies.utils.Constants;
 import android.example.popularmovies.viewmodels.MoviePostersListViewModel;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,16 +37,27 @@ public class MoviePostersListActivity extends AppCompatActivity implements OnMov
         initRecyclerView();
         mPostersListViewModel = ViewModelProviders.of(this).get(MoviePostersListViewModel.class);
         addObservers();
-        testRetroFitRequest();
+        this.getMoviesApi("popular", 1);
     }
 
 
     private void initRecyclerView() {
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 2);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, numberOfColumns());
         mAdapter = new PopularMoviesAdapter(this);
         mMoviesList.setAdapter(mAdapter);
         mMoviesList.setLayoutManager(layoutManager);
         mMoviesList.setHasFixedSize(true);
+    }
+
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // You can change this divider to adjust the size of the item
+        int widthDivider = 400;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2; //to keep the grid aspect
+        return nColumns;
     }
 
     private void addObservers() {
@@ -62,6 +74,8 @@ public class MoviePostersListActivity extends AppCompatActivity implements OnMov
             }
         });
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -81,10 +95,6 @@ public class MoviePostersListActivity extends AppCompatActivity implements OnMov
 
     private void getMoviesApi(String query, int pageNumber) {
         mPostersListViewModel.retrieveMoviesApi(query, pageNumber);
-    }
-
-    private void testRetroFitRequest() {
-        this.getMoviesApi("popular", 1);
     }
 
     @Override
